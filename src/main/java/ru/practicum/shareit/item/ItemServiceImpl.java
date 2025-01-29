@@ -10,6 +10,7 @@ import ru.practicum.shareit.user.interfaces.UserRepository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,7 +37,7 @@ public class ItemServiceImpl implements ItemService {
 
         Item oldItem = itemRepository.getById(itemId).get();
 
-        if (oldItem.getOwnerId() != userId) {
+        if (!Objects.equals(oldItem.getOwnerId(), userId)) {
             throw new ValidationException("Item с id - " + itemId + " не принаджелит пользователю - " + userId);
         }
         if (itemDto.getName() == null || itemDto.getName().isEmpty()) {
