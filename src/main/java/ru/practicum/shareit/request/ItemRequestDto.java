@@ -6,7 +6,7 @@ import ru.practicum.shareit.user.User;
 import java.time.LocalDate;
 
 @Data
-public class ItemRequest {
+public class ItemRequestDto {
     private Integer id;
     private String description;
     private User requestor;
