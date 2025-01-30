@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class InMemoryItemRepository implements ItemRepository {
-    Map<Integer, Item> items = new HashMap<>();
+    private final Map<Integer, Item> items = new HashMap<>();
 
     @Override
     public Item create(ItemDto itemDto, Integer userId) {
