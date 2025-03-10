@@ -1,17 +1,23 @@
 package ru.practicum.shareit.item.interfaces;
 
-import ru.practicum.shareit.item.ItemDto;
+import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.item.*;
 
 import java.util.Collection;
 
+@Transactional(readOnly = true)
 public interface ItemService {
-    ItemDto create(ItemDto itemDto, Integer userId);
+    @Transactional
+    ItemDtoResponse create(ItemDtoRequest itemDtoRequest, Integer userId);
 
-    ItemDto update(Integer itemId, ItemDto itemDto, Integer userId);
+    ItemDtoResponse update(Integer itemId, ItemDtoRequest itemDtoRequest, Integer userId);
 
-    ItemDto get(Integer itemId);
+    ItemDto get(Integer itemId, Integer userId);
 
-    Collection<ItemDto> getByOwner(Integer userId);
+    Collection<ItemDtoResponse> getByOwner(Integer userId);
 
-    Collection<ItemDto> search(String text);
+    Collection<ItemDtoResponse> search(String text);
+
+    @Transactional
+    CommentDtoResponse addComment(int userId, int itemId, CommentDtoRequest commentDtoRequest);
 }

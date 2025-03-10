@@ -17,30 +17,38 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping("/{id}")
-    public ItemDto getById(@PathVariable(name = "id") @Positive Integer id) {
-        return itemService.get(id);
+    public ItemDto getById(@PathVariable(name = "id") @Positive Integer id,
+                           @RequestHeader("X-Sharer-User-Id") Integer userId) {
+        return itemService.get(id, userId);
     }
 
     @GetMapping
-    public Collection<ItemDto> getByOwner(@RequestHeader("X-Sharer-User-Id") Integer userId) {
+    public Collection<ItemDtoResponse> getByOwner(@RequestHeader("X-Sharer-User-Id") Integer userId) {
         return itemService.getByOwner(userId);
     }
 
     @GetMapping("/search")
-    public Collection<ItemDto> search(@RequestParam(name = "text") String text) {
+    public Collection<ItemDtoResponse> search(@RequestParam(name = "text") String text) {
         return itemService.search(text);
     }
 
     @PostMapping
-    public ItemDto create(@RequestBody @Valid final ItemDto itemDto,
-                          @RequestHeader("X-Sharer-User-Id") Integer userId) {
-        return itemService.create(itemDto, userId);
+    public ItemDtoResponse create(@RequestBody @Valid final ItemDtoRequest itemDtoRequest,
+                                  @RequestHeader("X-Sharer-User-Id") Integer userId) {
+        return itemService.create(itemDtoRequest, userId);
     }
 
     @PatchMapping("/{id}")
-    public ItemDto update(@PathVariable(name = "id") @Positive final Integer itemId,
-                          @RequestBody final ItemDto itemDto,
-                          @RequestHeader("X-Sharer-User-Id") Integer userId) {
-        return itemService.update(itemId, itemDto, userId);
+    public ItemDtoResponse update(@PathVariable(name = "id") @Positive final Integer itemId,
+                                  @RequestBody final ItemDtoRequest itemDtoRequest,
+                                  @RequestHeader("X-Sharer-User-Id") Integer userId) {
+        return itemService.update(itemId, itemDtoRequest, userId);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDtoResponse addComment(@RequestHeader("X-Sharer-User-Id") int userId,
+                                         @PathVariable int itemId,
+                                         @Valid @RequestBody CommentDtoRequest commentRequest) {
+        return itemService.addComment(userId, itemId, commentRequest);
     }
 }
