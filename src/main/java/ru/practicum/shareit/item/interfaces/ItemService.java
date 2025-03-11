@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item.interfaces;
 
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.item.*;
 
 import java.util.Collection;
