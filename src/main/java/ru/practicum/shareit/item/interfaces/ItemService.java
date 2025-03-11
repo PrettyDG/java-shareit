@@ -5,9 +5,7 @@ import ru.practicum.shareit.item.*;
 
 import java.util.Collection;
 
-@Transactional(readOnly = true)
 public interface ItemService {
-    @Transactional
     ItemDtoResponse create(ItemDtoRequest itemDtoRequest, Integer userId);
 
     ItemDtoResponse update(Integer itemId, ItemDtoRequest itemDtoRequest, Integer userId);
@@ -18,6 +16,5 @@ public interface ItemService {
 
     Collection<ItemDtoResponse> search(String text);
 
-    @Transactional
     CommentDtoResponse addComment(int userId, int itemId, CommentDtoRequest commentDtoRequest);
 }

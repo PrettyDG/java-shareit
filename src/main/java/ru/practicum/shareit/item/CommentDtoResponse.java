@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommentDtoResponse {
-
     private Integer id;
     private String authorName;
     private String text;

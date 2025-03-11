@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking;
 import jakarta.validation.ValidationException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.interfaces.BookingRepository;
 import ru.practicum.shareit.booking.interfaces.BookingService;
 import ru.practicum.shareit.exception.NotFoundException;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final ItemRepository itemRepository;
@@ -72,6 +74,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Booking getBookingById(int userId, int bookingId) {
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException("Бронирование с id -" + bookingId + " не найдено"));
 
@@ -87,6 +90,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Collection<Booking> getBookingsByBooker(int userId, State state) {
         List<Booking> bookings;
 
@@ -118,6 +122,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Collection<Booking> getBookingsByOwner(int userId, State state) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден пользователь с id - " + userId));
         Set<Integer> itemIds = itemRepository.findAllItemsByUserOrderByIdAsc(user).stream()

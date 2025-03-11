@@ -3,6 +3,7 @@ package ru.practicum.shareit.item;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.interfaces.BookingRepository;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
@@ -29,6 +31,7 @@ public class ItemServiceImpl implements ItemService {
     private final CommentRepository commentRepository;
 
     @Override
+    @Transactional
     public ItemDtoResponse create(ItemDtoRequest itemDtoRequest, Integer userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Не найден пользователь с id - " + userId));
@@ -100,6 +103,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public CommentDtoResponse addComment(int userId, int itemId, CommentDtoRequest commentDtoRequest) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Не найден User с id - " + userId));
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Не найден Item с id - " + itemId));
