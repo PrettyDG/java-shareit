@@ -1,5 +1,6 @@
 package ru.yandex.practicum.booking;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
 import lombok.AllArgsConstructor;
@@ -13,8 +14,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class BookItemRequestDto {
     private Integer itemId;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Europe/Moscow")
     @FutureOrPresent
     private LocalDateTime start;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Europe/Moscow")
     @Future
     private LocalDateTime end;
 }

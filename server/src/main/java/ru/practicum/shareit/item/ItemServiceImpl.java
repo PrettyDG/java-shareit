@@ -130,7 +130,8 @@ public class ItemServiceImpl implements ItemService {
         }
 
         boolean hasCompletedBooking = bookingRepository.findById(itemId).stream()
-                .anyMatch(booking -> userId == booking.getBooker().getId() && booking.getEnd().isBefore(LocalDateTime.now()));
+                .anyMatch(booking -> userId == booking.getBooker().getId()
+                        && booking.getEnd().isBefore(LocalDateTime.now().plusHours(4)));
 
         if (!hasCompletedBooking) {
             throw new ValidationException("Пользователь с id: " + userId +

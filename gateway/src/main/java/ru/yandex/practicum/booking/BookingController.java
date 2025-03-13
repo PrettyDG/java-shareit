@@ -45,9 +45,10 @@ public class BookingController {
     }
 
     @PatchMapping("/{bookingId}")
-    public ResponseEntity<Object> updateBookingRequest(@RequestHeader("X-Sharer-User-Id") Integer userId,
-                                                       @PathVariable Integer bookingId, @RequestParam boolean approved) {
-        return bookingClient.updateBookingRequest(userId, bookingId, approved);
+    public ResponseEntity<Object> approvedBooking(@RequestHeader("X-Sharer-User-Id") long userId,
+                                                  @PathVariable long bookingId,
+                                                  @RequestParam boolean approved) {
+        return bookingClient.approvedBooking(userId, bookingId, approved);
     }
 
     @GetMapping("/owner")
