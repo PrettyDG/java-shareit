@@ -287,9 +287,7 @@ class ItemServiceImplTest {
 
         assertThatThrownBy(() -> itemService.addComment(user.getId(), item.getId(), request))
                 .isInstanceOf(ValidationException.class)
-                .hasMessage("Пользователь с id: " + user.getId() +
-                        " не бронировал предмет с id: " + item.getId() +
-                        " или срок бронирования не истек!");
+                .hasMessage("Срок бронирования не истек!");
 
         verify(commentRepository, never()).save(any(Comment.class));
     }

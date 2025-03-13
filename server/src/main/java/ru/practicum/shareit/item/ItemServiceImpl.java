@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.Booking;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -129,15 +131,17 @@ public class ItemServiceImpl implements ItemService {
             throw new ValidationException("Для предмета с id: " + itemId + " бронирования не было.");
         }
 
-        boolean hasCompletedBooking = bookingRepository.findById(itemId).stream()
-                .anyMatch(booking -> userId == booking.getBooker().getId()
-                        && booking.getEnd().isBefore(LocalDateTime.now().plusHours(4)));
+        Booking booking = bookings.getFirst();
 
-        if (!hasCompletedBooking) {
+        if (booking.getBooker().getId() != userId) {
             throw new ValidationException("Пользователь с id: " + userId +
-                    " не бронировал предмет с id: " + itemId +
-                    " или срок бронирования не истек!");
+                    " не бронировал предмет с id: " + itemId + "!");
         }
+
+        if (booking.getEnd().isAfter(LocalDateTime.now().plusHours(3))) {
+            throw new ValidationException("Срок бронирования не истек!");
+        }
+
 
         Comment comment = CommentMapper.dtoToComment(commentDtoRequest, item, user);
         comment.setCreated(LocalDateTime.now());
