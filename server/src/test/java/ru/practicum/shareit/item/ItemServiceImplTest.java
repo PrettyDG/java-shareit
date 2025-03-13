@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.interfaces.BookingRepository;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.interfaces.CommentRepository;
@@ -15,6 +16,7 @@ import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.interfaces.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -219,5 +221,116 @@ class ItemServiceImplTest {
 
         verify(userRepository).findById(userId);
         verify(itemRepository).findAllItemsByUserOrderByIdAsc(user);
+    }
+
+    @Test
+    void addComment_ShouldAddComment_WhenBookingIsCompleted() {
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(itemRepository.findById(item.getId())).thenReturn(Optional.of(item));
+
+        Booking completedBooking = Booking.builder()
+                .id(1)
+                .booker(user)
+                .item(item)
+                .start(LocalDateTime.now().minusDays(2))
+                .end(LocalDateTime.now().minusDays(1))
+                .build();
+
+        when(bookingRepository.findAllBookingsByItemIdInOrderByStartDesc(Set.of(item.getId())))
+                .thenReturn(List.of(completedBooking));
+        when(bookingRepository.findById(item.getId()))
+                .thenReturn(Optional.of(completedBooking));
+
+        CommentDtoRequest request = CommentDtoRequest.builder()
+                .text("Great item!")
+                .build();
+
+        Comment savedComment = Comment.builder()
+                .id(1)
+                .text("Great item!")
+                .item(item)
+                .author(user)
+                .created(LocalDateTime.now())
+                .build();
+
+        when(commentRepository.save(any(Comment.class))).thenReturn(savedComment);
+
+        CommentDtoResponse result = itemService.addComment(user.getId(), item.getId(), request);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getText()).isEqualTo(request.getText());
+        assertThat(result.getAuthorName()).isEqualTo(user.getName());
+        verify(commentRepository).save(any(Comment.class));
+    }
+
+    @Test
+    void addComment_ShouldThrowException_WhenBookingIsNotCompleted() {
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(itemRepository.findById(item.getId())).thenReturn(Optional.of(item));
+
+        Booking activeBooking = Booking.builder()
+                .id(1)
+                .booker(user)
+                .item(item)
+                .start(LocalDateTime.now().minusDays(1))
+                .end(LocalDateTime.now().plusDays(1))
+                .build();
+
+        when(bookingRepository.findAllBookingsByItemIdInOrderByStartDesc(Set.of(item.getId())))
+                .thenReturn(List.of(activeBooking));
+        when(bookingRepository.findById(item.getId()))
+                .thenReturn(Optional.of(activeBooking));
+
+        CommentDtoRequest request = CommentDtoRequest.builder()
+                .text("Nice item!")
+                .build();
+
+        assertThatThrownBy(() -> itemService.addComment(user.getId(), item.getId(), request))
+                .isInstanceOf(ValidationException.class)
+                .hasMessage("Пользователь с id: " + user.getId() +
+                        " не бронировал предмет с id: " + item.getId() +
+                        " или срок бронирования не истек!");
+
+        verify(commentRepository, never()).save(any(Comment.class));
+    }
+
+    @Test
+    void update_ShouldUpdateItem_WhenAllConditionsMet() {
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(itemRepository.findById(item.getId())).thenReturn(Optional.of(item));
+        when(itemRepository.save(any(Item.class))).thenReturn(item);
+
+        ItemDtoRequest request = ItemDtoRequest.builder()
+                .name(null) // Проверка на замену имени
+                .description(null) // Проверка на замену описания
+                .available(true)
+                .build();
+
+        ItemDtoResponse result = itemService.update(item.getId(), request, user.getId());
+
+        assertThat(result).isNotNull();
+        assertThat(result.getName()).isEqualTo(item.getName());
+        assertThat(result.getDescription()).isEqualTo(item.getDescription());
+
+        verify(itemRepository, times(2)).findById(item.getId());
+        verify(itemRepository).save(any(Item.class));
+    }
+
+    @Test
+    void update_ShouldThrowException_WhenItemNotFound() {
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(itemRepository.findById(item.getId())).thenReturn(Optional.empty());
+
+        ItemDtoRequest request = ItemDtoRequest.builder()
+                .name("New Name")
+                .description("New Description")
+                .available(true)
+                .build();
+
+        assertThatThrownBy(() -> itemService.update(item.getId(), request, user.getId()))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("Не найден item с id - " + item.getId());
+
+        verify(itemRepository, times(1)).findById(item.getId());
     }
 }

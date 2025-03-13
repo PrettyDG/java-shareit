@@ -1,9 +1,6 @@
 package ru.practicum.shareit.user;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.interfaces.UserService;
 
@@ -11,7 +8,6 @@ import java.util.Collection;
 
 @RestController
 @RequiredArgsConstructor
-@Validated
 @RequestMapping(path = "/users")
 public class UserController {
 
@@ -23,23 +19,23 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public UserDto getById(@PathVariable(name = "id") @Positive Integer id) {
+    public UserDto getById(@PathVariable(name = "id") Integer id) {
         return UserMapper.toUserDto(userService.getById(id));
     }
 
     @PostMapping
-    public UserDto create(@RequestBody @Valid final User user) {
+    public UserDto create(@RequestBody final User user) {
         return UserMapper.toUserDto(userService.create(user));
     }
 
     @PatchMapping("/{id}")
-    public UserDto update(@PathVariable(name = "id") @Positive final Integer id,
+    public UserDto update(@PathVariable(name = "id") final Integer id,
                           @RequestBody final User user) {
         return UserMapper.toUserDto(userService.update(id, user));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable(name = "id") @Positive final Integer id) {
+    public void deleteById(@PathVariable(name = "id") final Integer id) {
         userService.deleteById(id);
     }
 }

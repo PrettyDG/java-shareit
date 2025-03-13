@@ -99,7 +99,7 @@ class UserServiceImplTest {
         assertThat(result.getName()).isEqualTo(updatedUser.getName());
         assertThat(result.getEmail()).isEqualTo(updatedUser.getEmail());
 
-        verify(userRepository, times(2)).findById(user.getId());
+        verify(userRepository, times(1)).findById(user.getId());
         verify(userRepository).save(argThat(savedUser ->
                 savedUser.getName().equals(updatedUser.getName()) &&
                         savedUser.getEmail().equals(updatedUser.getEmail())

@@ -36,20 +36,16 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User update(Integer id, User user) {
-        if (!userExists(id)) {
-            throw new NotFoundException("Пользователь с id - " + id + "не найден.");
-        } else {
-            User oldUser = getById(id);
+        User oldUser = getById(id);
 
-            if (user.getEmail() != null) {
-                oldUser.setEmail(user.getEmail());
-            }
-            if (user.getName() != null) {
-                oldUser.setName(user.getName());
-            }
-
-            return userRepository.save(oldUser);
+        if (user.getEmail() != null) {
+            oldUser.setEmail(user.getEmail());
         }
+        if (user.getName() != null) {
+            oldUser.setName(user.getName());
+        }
+
+        return userRepository.save(oldUser);
     }
 
     @Override

@@ -8,6 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+
 @Slf4j
 @Validated
 @Controller
@@ -49,7 +51,13 @@ public class ItemController {
     @GetMapping("/search")
     public ResponseEntity<Object> searchItems(@RequestHeader("X-Sharer-User-Id") int userId,
                                               @RequestParam String text) {
-        log.info("Поиск предметов по запросу: {}, пользователем с id: {}", text, userId);
+        log.info("Поиск предметов по запросу: '{}', пользователем с id: {}", text, userId);
+
+        if (text == null || text.trim().isEmpty()) {
+            log.info("Пустой запрос, возвращаем пустую коллекцию");
+            return ResponseEntity.ok(Collections.emptyList());
+        }
+
         return itemClient.searchItems(userId, text);
     }
 

@@ -1,7 +1,5 @@
 package ru.practicum.shareit.item;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +15,7 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping("/{id}")
-    public ItemDto getById(@PathVariable(name = "id") @Positive Integer id,
+    public ItemDto getById(@PathVariable(name = "id") Integer id,
                            @RequestHeader("X-Sharer-User-Id") Integer userId) {
         return itemService.get(id, userId);
     }
@@ -33,13 +31,13 @@ public class ItemController {
     }
 
     @PostMapping
-    public ItemDtoResponse create(@RequestBody @Valid final ItemDtoRequest itemDtoRequest,
+    public ItemDtoResponse create(@RequestBody final ItemDtoRequest itemDtoRequest,
                                   @RequestHeader("X-Sharer-User-Id") Integer userId) {
         return itemService.create(itemDtoRequest, userId);
     }
 
     @PatchMapping("/{id}")
-    public ItemDtoResponse update(@PathVariable(name = "id") @Positive final Integer itemId,
+    public ItemDtoResponse update(@PathVariable(name = "id") final Integer itemId,
                                   @RequestBody final ItemDtoRequest itemDtoRequest,
                                   @RequestHeader("X-Sharer-User-Id") Integer userId) {
         return itemService.update(itemId, itemDtoRequest, userId);
@@ -48,7 +46,7 @@ public class ItemController {
     @PostMapping("/{itemId}/comment")
     public CommentDtoResponse addComment(@RequestHeader("X-Sharer-User-Id") int userId,
                                          @PathVariable int itemId,
-                                         @Valid @RequestBody CommentDtoRequest commentRequest) {
+                                         @RequestBody CommentDtoRequest commentRequest) {
         return itemService.addComment(userId, itemId, commentRequest);
     }
 }
