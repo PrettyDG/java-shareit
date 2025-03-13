@@ -215,7 +215,7 @@ class BookingServiceImplTest {
 
     @Test
     void getBookingsByBooker_ShouldReturnPastBookings() {
-        when(bookingRepository.findAllBookingsByBookerIdAndEndBeforeOrderByStartDesc(user.getId(), LocalDateTime.now()))
+        when(bookingRepository.findAllBookingsByBookerIdAndEndBeforeOrderByStartDesc(eq(user.getId()), any()))
                 .thenReturn(List.of(booking));
 
         List<Booking> result = bookingService.getBookingsByBooker(user.getId(), State.PAST).stream().toList();
@@ -224,12 +224,12 @@ class BookingServiceImplTest {
         assertEquals(1, result.size());
         assertEquals(booking.getId(), result.get(0).getId());
 
-        verify(bookingRepository).findAllBookingsByBookerIdAndEndBeforeOrderByStartDesc(user.getId(), LocalDateTime.now());
+        verify(bookingRepository).findAllBookingsByBookerIdAndEndBeforeOrderByStartDesc(eq(user.getId()), any());
     }
 
     @Test
     void getBookingsByBooker_ShouldReturnFutureBookings() {
-        when(bookingRepository.findAllBookingsByBookerIdAndStartAfterOrderByStartDesc(user.getId(), LocalDateTime.now()))
+        when(bookingRepository.findAllBookingsByBookerIdAndStartAfterOrderByStartDesc(eq(user.getId()), any()))
                 .thenReturn(List.of(booking));
 
         List<Booking> result = bookingService.getBookingsByBooker(user.getId(), State.FUTURE).stream().toList();
@@ -238,7 +238,7 @@ class BookingServiceImplTest {
         assertEquals(1, result.size());
         assertEquals(booking.getId(), result.get(0).getId());
 
-        verify(bookingRepository).findAllBookingsByBookerIdAndStartAfterOrderByStartDesc(user.getId(), LocalDateTime.now());
+        verify(bookingRepository).findAllBookingsByBookerIdAndStartAfterOrderByStartDesc(eq(user.getId()), any());
     }
 
     @Test
