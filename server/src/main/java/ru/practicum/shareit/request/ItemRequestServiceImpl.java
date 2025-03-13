@@ -48,14 +48,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public ItemRequestDto findById(Integer requestId) {
         ItemRequestDto itemRequestDto = ItemRequestMapper.toItemRequestDto(repository.findById(requestId)
                 .orElseThrow(() -> new NotFoundException("Реквест не найден")));
-        log.info("All items in database:");
-        itemRepository.findAll().forEach(item ->
-                log.info("Item: id={}, name={}, requestId={}",
-                        item.getId(),
-                        item.getName(),
-                        item.getRequest() != null ? item.getRequest().getId() : "NULL"
-                )
-        );
         itemRequestDto.setItems(itemRepository.findByRequestId(requestId));
         return itemRequestDto;
     }

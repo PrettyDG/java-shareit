@@ -96,6 +96,26 @@ class ItemServiceImplTest {
     }
 
     @Test
+    void create_ShouldCreateItem_WhenRequestNotExists() {
+        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(itemRequestRepository.findById(itemRequest.getId())).thenReturn(Optional.of(itemRequest));
+        when(itemRepository.save(any(Item.class))).thenReturn(item);
+
+        ItemDtoRequest request = ItemDtoRequest.builder()
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .build();
+
+        ItemDtoResponse result = itemService.create(request, user.getId());
+
+        assertThat(result).isNotNull();
+        assertThat(result.getName()).isEqualTo(item.getName());
+        assertThat(result.getDescription()).isEqualTo(item.getDescription());
+        verify(itemRepository).save(any(Item.class));
+    }
+
+    @Test
     void create_ShouldThrowException_WhenUserNotFound() {
         when(userRepository.findById(anyInt())).thenReturn(Optional.empty());
 

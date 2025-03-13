@@ -135,6 +135,7 @@ class UserServiceImplTest {
         verify(userRepository).deleteById(user.getId());
     }
 
+
     @Test
     void deleteById_ShouldThrowNotFoundException_WhenUserDoesNotExist() {
         when(userRepository.findById(anyInt())).thenReturn(Optional.empty());
